@@ -4,8 +4,9 @@ Build **`2026-07-16 EARBUD-CINE-A`**. Harness **101 green**, `doc_check` green,
 script snapshot blessed (DIVERGENT 0). Mike's flap pool rebuilds byte-identical.
 This tree is canonical.
 
-> **Session-start protocol:** read the last two DEVLOG entries + this file, run
-> `npm install`, then `node tools/harness.js` (expect 101 green) before any work.
+> **Session-start protocol:** clone `github.com/mhoke84/SIgnal-of-the-Heart`,
+> read the last two DEVLOG entries + this file, run `npm install`, then
+> `node tools/harness.js` (expect 101 green) before any work.
 
 ---
 

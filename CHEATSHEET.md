@@ -9,11 +9,11 @@ Green harness = safe. Red harness = stop and read it; it is telling you somethin
 py -m pip install mido python-docx pillow numpy
 ```
 
-## ONCE PER UNZIPPED FOLDER (node)
+## ONCE PER CLONE (node)
 ```powershell
 npm install
 ```
-`node_modules` does not travel in the zip. **Every fresh copy of the project needs
+`node_modules` is not committed. **Every fresh clone of the project needs
 `npm install` once**, or the harness dies with `Cannot find module 'pngjs'`.
 
 ## EVERY SESSION, BEFORE ANYTHING
@@ -22,8 +22,8 @@ node tools\harness.js        # must be green BEFORE you start, not just after
 ```
 
 **You do not run `script_check.py`.** That one is mine — it tells *me* what you
-changed in the script since last session, and it runs against the folder you send
-me. Rewrite scenes freely; the snapshot travels in the zip and I diff it.
+changed in the script since last session, and it runs against the tree you push.
+Rewrite scenes freely; the snapshot is committed to the repo and I diff it.
 The only time you'd want it: `py tools\script_check.py --show 2` prints Scene 2
 from both script files, side by side, if you're trying to remember which is which.
 
@@ -155,12 +155,12 @@ Cat, props, odd sizes: `py tools\sprite_intake.py STYLUS.sheet.png --cell 32x32`
 | symptom | almost always |
 |---|---|
 | `intake.py` refuses | You pointed it at `normalized\`. It **writes** there. Point it at `raw\`. |
-| `Cannot find module 'pngjs'` | Run `npm install` in **this** folder. Every unzip needs it once. |
+| `Cannot find module 'pngjs'` | Run `npm install` in **this** folder. Every clone needs it once. |
 | State B walks through furniture | You painted `<ID>-B`'s masks but didn't run `mask2json` on the **B** ID. |
 | A door does nothing | The target room isn't painted yet, or its `.data.js` isn't in `index.html`. Or you're not facing it (`face:'up'`). |
 | An overlay is off-target | `fx` `at` is the effect's CENTRE. Run `anchorview.py` and look. |
 | I can't raise a door | The floor doesn't reach. Repaint the threshold, `mask2json`, then move the rect. |
-| "My change didn't take / it reverted" | Cached copy. Check the **BUILD stamp**, bottom-left of the title screen. If it doesn't match `main.js`, hit **Ctrl+Shift+R**. Also check you don't have two copies of the project unzipped. |
+| "My change didn't take / it reverted" | Cached copy. Check the **BUILD stamp**, bottom-left of the title screen. If it doesn't match `main.js`, hit **Ctrl+Shift+R**. Also check you don't have two copies of the project cloned/open. |
 | Occluders look wrong | You didn't run `mask2json` after painting. |
 | Two objects share one horizon | Their orange blobs touch. Leave a 4px gap. |
 | Character floats / slides | `sprite_intake` told you. Re-read its flags. |

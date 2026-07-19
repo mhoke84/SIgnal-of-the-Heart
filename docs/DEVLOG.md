@@ -1707,3 +1707,40 @@ a walk-by" and became a little choreography studio. Build it out when the scene
 asks, not before.
 
 — crew, night thirty-four, flying blind but measuring twice
+---
+
+## NIGHT THIRTY-FIVE — THE TREE MOVES TO GIT (no more mailing the whole crate)
+
+The project got too big to keep mailing as a zip, so the producer stood up a
+public repo — `github.com/mhoke84/SIgnal-of-the-Heart` — and the handoff changed
+shape. Confirmed end to end before trusting it: this sandbox reaches GitHub and
+runs a real `git clone`, so the crew now pulls the latest HEAD at session start
+instead of unpacking whatever got zipped. Cloned it, diffed against the last
+blessed zip: 354 files each side, and the only delta was two generated `.data.js`
+files where git normalized Windows CRLF to LF — content byte-identical, harness
+indifferent. Ran the full §0.5 against the fresh clone: `npm install` clean, 101
+green, doc_check green, script DIVERGENT 0. The pipe is trustworthy.
+
+One asymmetry to remember: the crew can clone but **cannot push** — no write
+creds in the sandbox, and it shouldn't hold any. So inbound is git (producer
+pushes, crew clones); outbound stays a hand-back the producer applies — a git
+patch or the same canonical zip as before. The upload burden, which was the whole
+problem, is just gone.
+
+Then swept the docs for the old assumption, because doc_check exists precisely to
+stop stale docs getting believed. Every "travels in the zip / once per unzipped
+folder / ship the zip" line was now a small lie about how the tree moves. Fixed
+the transport wording in the crew docs (§0.5 and §13 close protocol), added the
+clone step to NEXT_SESSION's session-start line, and — with the producer's
+say-so — updated the producer CHEATSHEET's five unzip references to clone. Left
+history alone: the DEVLOG's past entries and the §12 line about the "uploaded zip"
+describe what actually happened and stay as written. This entry is the record of
+the switch.
+
+Docs + workflow only; no runtime moved, so the build stamp holds at
+EARBUD-CINE-A. Harness 101 green, doc_check green.
+
+Lesson: when the plumbing changes, the docs about the plumbing are the first thing
+to rot — and they rot silently. Go find every line that assumed the old pipe.
+
+— crew, night thirty-five, off the zips at last

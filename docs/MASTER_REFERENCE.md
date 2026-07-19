@@ -41,9 +41,9 @@ Do not read it for current truth; it contains claims that are now false.
 
 **This section is the crew's job, not the producer's.** `script_check.py` exists
 to answer *"what did the producer change while we weren't looking?"* — the
-producer already knows. It runs against the folder they send, and its snapshot
-(`docs/.script_snapshot.json`) travels inside the zip, so it works across the
-handoff. It is deliberately absent from `CHEATSHEET.md`.
+producer already knows. It runs against the working tree, and its snapshot
+(`docs/.script_snapshot.json`) is committed to the repo, so it survives the
+clone. It is deliberately absent from `CHEATSHEET.md`.
 
 The producer rewrites scenes on the fly. Dialogue and stage directions are
 canon, so drift has to be caught **before** the crew touches a line of it.
@@ -1051,7 +1051,7 @@ node tools\shot.js                      # registration shots per occluder blob
 ## 13. SESSION CLOSE PROTOCOL
 
 1. `py tools\script_check.py --accept` → snapshot the script as blessed.
-   (Crew, not the producer. The snapshot ships in the zip.)
+   (Crew, not the producer. The snapshot is committed to the repo.)
 2. `node tools\harness.js` → green.
 2b. **`py tools\doc_check.py` → green.** Audits every command, path, number and
    code-claim these docs make against the repo. Stale docs get believed: this file
@@ -1061,4 +1061,7 @@ node tools\shot.js                      # registration shots per occluder blob
 3. Update §2 (state), §8 (status), §12 (open decisions) of this file.
 4. Bump `BUILD` in `main.js`.
 5. Fold any tooling change into §5 / §6. Close and archive any open fix doc.
-6. Ship the playable zip and the producer's screenshots.
+6. Hand the session's changes back as a git patch (or zip) for the producer to
+   apply and push; note the producer's screenshots. (Repo is
+   `github.com/mhoke84/SIgnal-of-the-Heart`; the crew clones it at session start
+   and cannot push — the producer commits.)
