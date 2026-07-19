@@ -16,6 +16,30 @@ npm install
 `node_modules` is not committed. **Every fresh clone of the project needs
 `npm install` once**, or the harness dies with `Cannot find module 'pngjs'`.
 
+## GIT — MOVING WORK IN AND OUT
+Repo: `github.com/mhoke84/SIgnal-of-the-Heart`. **You push in both directions** —
+the crew can clone but cannot push, so everything reaches GitHub through you.
+
+**You made edits, send them up:**
+```powershell
+git status                        # what you changed (sanity check)
+git add -A
+git commit -m "what you changed"
+git push
+```
+
+**The crew handed you a `.patch`, pull it in:** drop the file in this folder, then
+```powershell
+git apply thefile.patch           # applies the crew's edits to your files
+git status                        # confirm the expected files changed
+del thefile.patch                 # remove the envelope so it isn't committed
+git add -A
+git commit -m "what changed"
+git push
+```
+If `git apply` complains: `git apply --3way thefile.patch`. The only difference
+between the two flows is that one starts with `git apply`; the rest is identical.
+
 ## EVERY SESSION, BEFORE ANYTHING
 ```powershell
 node tools\harness.js        # must be green BEFORE you start, not just after
