@@ -1,0 +1,42 @@
+{
+  "format": "48x48 RGBA, drawn 2x in the talk box",
+  "open_seq": [
+    "m0",
+    "m1",
+    "m2",
+    "m1"
+  ],
+  "cadence": "cycle open_seq while text types; show rest when the line ends",
+  "moods": {
+    "neutral": {
+      "rest": "MIKE.neutral.rest.png",
+      "open": [
+        "MIKE.neutral.m0.png",
+        "MIKE.neutral.m1.png",
+        "MIKE.neutral.m2.png"
+      ],
+      "note": "single-grid talking-1: base cell 8 + own mouths 4/5/7 (mouth cells are a placeholder pick)",
+      "stable": true
+    },
+    "angry": {
+      "rest": "MIKE.angry.rest.png",
+      "open": [
+        "MIKE.angry.m0.png",
+        "MIKE.angry.m1.png",
+        "MIKE.angry.m2.png"
+      ],
+      "note": "shouting shapes",
+      "stable": true
+    },
+    "worried": {
+      "rest": "MIKE.worried.rest.png",
+      "open": [
+        "MIKE.worried.m0.png",
+        "MIKE.worried.m1.png",
+        "MIKE.worried.m2.png"
+      ],
+      "note": "PLACEHOLDER-subtle: source dips head; wants a worried talking set",
+      "stable": true
+    }
+  }
+}

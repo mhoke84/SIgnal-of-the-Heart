@@ -1,0 +1,483 @@
+{
+  "base": {
+    "file": "base.0.png",
+    "src": [
+      "IZZY.neutral-1.png",
+      1
+    ]
+  },
+  "eyes": [
+    {
+      "file": "eyes.0.png",
+      "src": [
+        "IZZY.talking-warm.png",
+        6
+      ],
+      "change": 45.1,
+      "off": [
+        0,
+        -11
+      ]
+    },
+    {
+      "file": "eyes.1.png",
+      "src": [
+        "IZZY.whisper.png",
+        5
+      ],
+      "change": 44.9,
+      "off": [
+        0,
+        -9
+      ]
+    },
+    {
+      "file": "eyes.2.png",
+      "src": [
+        "IZZY.sad.png",
+        5
+      ],
+      "change": 43.7,
+      "off": [
+        0,
+        -11
+      ]
+    },
+    {
+      "file": "eyes.3.png",
+      "src": [
+        "IZZY.screaming.png",
+        8
+      ],
+      "change": 43.0,
+      "off": [
+        0,
+        -10
+      ]
+    },
+    {
+      "file": "eyes.4.png",
+      "src": [
+        "IZZY.yelling.png",
+        2
+      ],
+      "change": 42.9,
+      "off": [
+        0,
+        -4
+      ]
+    },
+    {
+      "file": "eyes.5.png",
+      "src": [
+        "IZZY.sad.png",
+        3
+      ],
+      "change": 41.3,
+      "off": [
+        0,
+        -6
+      ]
+    },
+    {
+      "file": "eyes.6.png",
+      "src": [
+        "IZZY.yelling.png",
+        1
+      ],
+      "change": 38.5,
+      "off": [
+        0,
+        -3
+      ]
+    },
+    {
+      "file": "eyes.7.png",
+      "src": [
+        "IZZY.whisper.png",
+        3
+      ],
+      "change": 38.0,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "eyes.8.png",
+      "src": [
+        "IZZY.talking-smooth.png",
+        4
+      ],
+      "change": 37.5,
+      "off": [
+        0,
+        2
+      ]
+    },
+    {
+      "file": "eyes.9.png",
+      "src": [
+        "IZZY.neutral-1.png",
+        7
+      ],
+      "change": 36.3,
+      "off": [
+        0,
+        -4
+      ]
+    },
+    {
+      "file": "eyes.10.png",
+      "src": [
+        "IZZY.neutral-2.png",
+        2
+      ],
+      "change": 36.0,
+      "off": [
+        0,
+        -4
+      ]
+    },
+    {
+      "file": "eyes.11.png",
+      "src": [
+        "IZZY.confused.png",
+        2
+      ],
+      "change": 35.8,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "eyes.12.png",
+      "src": [
+        "IZZY.talking-warm.png",
+        1
+      ],
+      "change": 35.6,
+      "off": [
+        0,
+        1
+      ]
+    },
+    {
+      "file": "eyes.13.png",
+      "src": [
+        "IZZY.confused.png",
+        5
+      ],
+      "change": 31.1,
+      "off": [
+        0,
+        -4
+      ]
+    },
+    {
+      "file": "eyes.14.png",
+      "src": [
+        "IZZY.neutral-1.png",
+        5
+      ],
+      "change": 29.0,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "eyes.15.png",
+      "src": [
+        "IZZY.talking-smooth.png",
+        8
+      ],
+      "change": 28.0,
+      "off": [
+        0,
+        -3
+      ]
+    },
+    {
+      "file": "eyes.16.png",
+      "src": [
+        "IZZY.yelling.png",
+        5
+      ],
+      "change": 27.7,
+      "off": [
+        0,
+        11
+      ]
+    },
+    {
+      "file": "eyes.17.png",
+      "src": [
+        "IZZY.confused.png",
+        6
+      ],
+      "change": 24.9,
+      "off": [
+        0,
+        0
+      ]
+    },
+    {
+      "file": "eyes.18.png",
+      "src": [
+        "IZZY.talking-smooth.png",
+        1
+      ],
+      "change": 23.6,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "eyes.19.png",
+      "src": [
+        "IZZY.confused.png",
+        8
+      ],
+      "change": 22.6,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "eyes.20.png",
+      "src": [
+        "IZZY.confused.png",
+        7
+      ],
+      "change": 21.3,
+      "off": [
+        0,
+        1
+      ]
+    }
+  ],
+  "mouth": [
+    {
+      "file": "mouth.0.png",
+      "src": [
+        "IZZY.yelling.png",
+        5
+      ],
+      "change": 63.6,
+      "off": [
+        0,
+        11
+      ]
+    },
+    {
+      "file": "mouth.1.png",
+      "src": [
+        "IZZY.screaming.png",
+        4
+      ],
+      "change": 58.7,
+      "off": [
+        0,
+        8
+      ]
+    },
+    {
+      "file": "mouth.2.png",
+      "src": [
+        "IZZY.screaming.png",
+        8
+      ],
+      "change": 58.4,
+      "off": [
+        0,
+        -10
+      ]
+    },
+    {
+      "file": "mouth.3.png",
+      "src": [
+        "IZZY.yelling.png",
+        4
+      ],
+      "change": 55.2,
+      "off": [
+        0,
+        8
+      ]
+    },
+    {
+      "file": "mouth.4.png",
+      "src": [
+        "IZZY.yelling.png",
+        7
+      ],
+      "change": 50.1,
+      "off": [
+        0,
+        7
+      ]
+    },
+    {
+      "file": "mouth.5.png",
+      "src": [
+        "IZZY.screaming.png",
+        5
+      ],
+      "change": 48.8,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "mouth.6.png",
+      "src": [
+        "IZZY.screaming.png",
+        3
+      ],
+      "change": 35.6,
+      "off": [
+        0,
+        1
+      ]
+    },
+    {
+      "file": "mouth.7.png",
+      "src": [
+        "IZZY.screaming.png",
+        6
+      ],
+      "change": 33.3,
+      "off": [
+        0,
+        -4
+      ]
+    },
+    {
+      "file": "mouth.8.png",
+      "src": [
+        "IZZY.neutral-1.png",
+        3
+      ],
+      "change": 31.0,
+      "off": [
+        0,
+        4
+      ]
+    },
+    {
+      "file": "mouth.9.png",
+      "src": [
+        "IZZY.talking-smooth.png",
+        4
+      ],
+      "change": 28.7,
+      "off": [
+        0,
+        2
+      ]
+    },
+    {
+      "file": "mouth.10.png",
+      "src": [
+        "IZZY.yelling.png",
+        2
+      ],
+      "change": 26.6,
+      "off": [
+        0,
+        -4
+      ]
+    },
+    {
+      "file": "mouth.11.png",
+      "src": [
+        "IZZY.talking-warm.png",
+        6
+      ],
+      "change": 24.9,
+      "off": [
+        0,
+        -11
+      ]
+    },
+    {
+      "file": "mouth.12.png",
+      "src": [
+        "IZZY.talking-warm.png",
+        8
+      ],
+      "change": 23.6,
+      "off": [
+        0,
+        -7
+      ]
+    },
+    {
+      "file": "mouth.13.png",
+      "src": [
+        "IZZY.sad.png",
+        3
+      ],
+      "change": 23.4,
+      "off": [
+        0,
+        -6
+      ]
+    },
+    {
+      "file": "mouth.14.png",
+      "src": [
+        "IZZY.neutral-2.png",
+        6
+      ],
+      "change": 23.3,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "mouth.15.png",
+      "src": [
+        "IZZY.confused.png",
+        4
+      ],
+      "change": 22.9,
+      "off": [
+        0,
+        -8
+      ]
+    }
+  ],
+  "rois": {
+    "nose": [
+      109,
+      121,
+      96,
+      160
+    ],
+    "upper": [
+      62,
+      116,
+      58,
+      194
+    ],
+    "mouth": [
+      120,
+      180,
+      84,
+      172
+    ],
+    "mouth_inner": [
+      125,
+      138,
+      100,
+      158
+    ]
+  }
+}

@@ -1,0 +1,483 @@
+{
+  "base": {
+    "file": "base.0.png",
+    "src": [
+      "MIKE.talking-1.png",
+      8
+    ]
+  },
+  "eyes": [
+    {
+      "file": "eyes.0.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        6
+      ],
+      "change": 54.2,
+      "off": [
+        0,
+        14
+      ]
+    },
+    {
+      "file": "eyes.1.png",
+      "src": [
+        "MIKE.yelling.png",
+        4
+      ],
+      "change": 51.3,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "eyes.2.png",
+      "src": [
+        "MIKE.yelling.png",
+        7
+      ],
+      "change": 47.6,
+      "off": [
+        0,
+        -6
+      ]
+    },
+    {
+      "file": "eyes.3.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        4
+      ],
+      "change": 45.3,
+      "off": [
+        0,
+        9
+      ]
+    },
+    {
+      "file": "eyes.4.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        8
+      ],
+      "change": 44.6,
+      "off": [
+        0,
+        6
+      ]
+    },
+    {
+      "file": "eyes.5.png",
+      "src": [
+        "MIKE.faces-excited.png",
+        7
+      ],
+      "change": 44.0,
+      "off": [
+        1,
+        -14
+      ]
+    },
+    {
+      "file": "eyes.6.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        3
+      ],
+      "change": 41.3,
+      "off": [
+        0,
+        1
+      ]
+    },
+    {
+      "file": "eyes.7.png",
+      "src": [
+        "MIKE.yelling.png",
+        5
+      ],
+      "change": 40.8,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "eyes.8.png",
+      "src": [
+        "MIKE.faces-worried.png",
+        6
+      ],
+      "change": 40.7,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "eyes.9.png",
+      "src": [
+        "MIKE.faces-excited.png",
+        3
+      ],
+      "change": 40.0,
+      "off": [
+        1,
+        -6
+      ]
+    },
+    {
+      "file": "eyes.10.png",
+      "src": [
+        "MIKE.faces-2.png",
+        6
+      ],
+      "change": 39.1,
+      "off": [
+        0,
+        -14
+      ]
+    },
+    {
+      "file": "eyes.11.png",
+      "src": [
+        "MIKE.faces-wide.png",
+        7
+      ],
+      "change": 38.7,
+      "off": [
+        0,
+        -13
+      ]
+    },
+    {
+      "file": "eyes.12.png",
+      "src": [
+        "MIKE.faces-wide.png",
+        3
+      ],
+      "change": 37.9,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "eyes.13.png",
+      "src": [
+        "MIKE.faces-browraise.png",
+        2
+      ],
+      "change": 31.6,
+      "off": [
+        0,
+        -6
+      ]
+    },
+    {
+      "file": "eyes.14.png",
+      "src": [
+        "MIKE.speaking.png",
+        3
+      ],
+      "change": 31.2,
+      "off": [
+        0,
+        4
+      ]
+    },
+    {
+      "file": "eyes.15.png",
+      "src": [
+        "MIKE.speaking.png",
+        5
+      ],
+      "change": 29.3,
+      "off": [
+        0,
+        0
+      ]
+    },
+    {
+      "file": "eyes.16.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        2
+      ],
+      "change": 28.9,
+      "off": [
+        0,
+        -7
+      ]
+    },
+    {
+      "file": "eyes.17.png",
+      "src": [
+        "MIKE.faces-2.png",
+        3
+      ],
+      "change": 25.3,
+      "off": [
+        0,
+        -6
+      ]
+    },
+    {
+      "file": "eyes.18.png",
+      "src": [
+        "MIKE.yelling.png",
+        3
+      ],
+      "change": 24.8,
+      "off": [
+        0,
+        -3
+      ]
+    },
+    {
+      "file": "eyes.19.png",
+      "src": [
+        "MIKE.faces-browraise.png",
+        3
+      ],
+      "change": 22.3,
+      "off": [
+        0,
+        -5
+      ]
+    }
+  ],
+  "mouth": [
+    {
+      "file": "mouth.0.png",
+      "src": [
+        "MIKE.yelling.png",
+        6
+      ],
+      "change": 70.6,
+      "off": [
+        0,
+        -11
+      ]
+    },
+    {
+      "file": "mouth.1.png",
+      "src": [
+        "MIKE.yelling.png",
+        7
+      ],
+      "change": 69.3,
+      "off": [
+        0,
+        -6
+      ]
+    },
+    {
+      "file": "mouth.2.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        4
+      ],
+      "change": 67.5,
+      "off": [
+        0,
+        9
+      ]
+    },
+    {
+      "file": "mouth.3.png",
+      "src": [
+        "MIKE.yelling.png",
+        5
+      ],
+      "change": 67.1,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "mouth.4.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        6
+      ],
+      "change": 62.4,
+      "off": [
+        0,
+        14
+      ]
+    },
+    {
+      "file": "mouth.5.png",
+      "src": [
+        "MIKE.yelling.png",
+        2
+      ],
+      "change": 55.8,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "mouth.6.png",
+      "src": [
+        "MIKE.yelling.png",
+        8
+      ],
+      "change": 54.6,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "mouth.7.png",
+      "src": [
+        "MIKE.yelling.png",
+        4
+      ],
+      "change": 53.0,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "mouth.8.png",
+      "src": [
+        "MIKE.faces-worried.png",
+        6
+      ],
+      "change": 43.4,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "mouth.9.png",
+      "src": [
+        "MIKE.talking-1.png",
+        6
+      ],
+      "change": 40.5,
+      "off": [
+        0,
+        2
+      ]
+    },
+    {
+      "file": "mouth.10.png",
+      "src": [
+        "MIKE.faces-excited.png",
+        8
+      ],
+      "change": 39.9,
+      "off": [
+        1,
+        -14
+      ]
+    },
+    {
+      "file": "mouth.11.png",
+      "src": [
+        "MIKE.faces-scream.png",
+        3
+      ],
+      "change": 39.8,
+      "off": [
+        0,
+        1
+      ]
+    },
+    {
+      "file": "mouth.12.png",
+      "src": [
+        "MIKE.faces-2.png",
+        6
+      ],
+      "change": 36.9,
+      "off": [
+        0,
+        -14
+      ]
+    },
+    {
+      "file": "mouth.13.png",
+      "src": [
+        "MIKE.faces-worried.png",
+        8
+      ],
+      "change": 34.8,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "mouth.14.png",
+      "src": [
+        "MIKE.speaking.png",
+        4
+      ],
+      "change": 32.9,
+      "off": [
+        0,
+        5
+      ]
+    },
+    {
+      "file": "mouth.15.png",
+      "src": [
+        "MIKE.yelling.png",
+        3
+      ],
+      "change": 31.8,
+      "off": [
+        0,
+        -3
+      ]
+    },
+    {
+      "file": "mouth.16.png",
+      "src": [
+        "MIKE.faces-excited.png",
+        4
+      ],
+      "change": 30.8,
+      "off": [
+        1,
+        -10
+      ]
+    }
+  ],
+  "rois": {
+    "nose": [
+      118,
+      150,
+      96,
+      160
+    ],
+    "upper": [
+      80,
+      146,
+      62,
+      194
+    ],
+    "mouth": [
+      140,
+      214,
+      82,
+      174
+    ],
+    "mouth_inner": [
+      137,
+      151,
+      98,
+      160
+    ]
+  }
+}

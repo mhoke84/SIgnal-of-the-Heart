@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+# coding: utf-8
+"""
+RADIO UNDERGROUND v2 — mask2json.py
+Painted layers -> room data, written into assets/anchors/<ID>.data.js.
+Usage: python3 tools/mask2json.py <ID> [grid]
+
+FLOOR   assets/masks/<ID>.mask.png  (required)
+  WHITE (r,g,b all >200)          = 1 walkable
+  BLUE  (b>150, r<100)            = 2 walkable, walk-behind corridor
+  anything else (BLACK expected)  = 0 solid
+  Cell value = majority vote per grid cell (default 4px) -> RLE into `mask:`.
+
+OCCLUDER assets/masks/<ID>.occl.png  (optional)
+  Orange opaque paint = object silhouettes that redraw OVER sprites.
+  Each connected blob becomes one occluder whose HORIZON is the blob's
+  bottom pixel row (its floor-contact line), decomposed into cell-snapped
+  rectangles so overlapping bounding boxes of separate objects never
+  steal each other's pixels. Result replaces the `walkBehind:` array.
+  If no occl.png exists, `walkBehind:` is left untouched (hand-authored).
+
+The tool updates only those fields; everything else in the .data.js is
+hand-authored and stays that way.
+"""
+import sys,os,re
+import numpy as np
+from PIL import Image
+
+def classify(a):
+    r,g,b=a[...,0].astype(int),a[...,1].astype(int),a[...,2].astype(int)
+    out=np.zeros(r.shape,dtype=np.uint8)
+    out[(r>200)&(g>200)&(b>200)]=1
+    out[(b>150)&(r<100)]=2
+    return out
+
+def rle(cells):
+    flat=cells.flatten();runs=[];prev=int(flat[0]);n=0
+    for v in flat:
+        v=int(v)
+        if v==prev:n+=1
+        else:runs.append(f"{n}:{prev}");prev=v;n=1
+    runs.append(f"{n}:{prev}")
+    return ','.join(runs)
+
+def occl_strips(path,grid):
+    """orange blobs -> [{x,y,w,h,horizon,note}] via BFS + row-run merge"""
+    a=np.array(Image.open(path).convert('RGBA'))
+    on=(a[...,3]>128)&(a[...,0]>150)&(a[...,2]<120)
+    H,W=on.shape;ch,cw=(H+grid-1)//grid,(W+grid-1)//grid
+    cells=np.zeros((ch,cw),dtype=bool)
+    for cy in range(ch):
+        for cx in range(cw):
+            if on[cy*grid:(cy+1)*grid,cx*grid:(cx+1)*grid].mean()>0.4:
+                cells[cy,cx]=True
+    seen=np.zeros_like(cells,dtype=int);blobs=[];n=0
+    from collections import deque
+    for y in range(ch):
+        for x in range(cw):
+            if cells[y,x] and not seen[y,x]:
+                n+=1;q=deque([(y,x)]);seen[y,x]=n;pts=[]
+                while q:
+                    py,px=q.popleft();pts.append((py,px))
+                    for dy,dx in((1,0),(-1,0),(0,1),(0,-1)):
+                        ny,nx=py+dy,px+dx
+                        if 0<=ny<ch and 0<=nx<cw and cells[ny,nx] and not seen[ny,nx]:
+                            seen[ny,nx]=n;q.append((ny,nx))
+                if len(pts)<3:continue   # ignore stray-cell noise
+                blobs.append(pts)
+    strips=[]
+    for i,pts in enumerate(blobs,1):
+        # true horizon from PIXELS of this blob (bottom of the silhouette)
+        ys=[p[0] for p in pts];xs=[p[1] for p in pts]
+        blk=on[min(ys)*grid:(max(ys)+1)*grid,min(xs)*grid:(max(xs)+1)*grid]
+        horizon=min(ys)*grid+int(np.where(blk.any(axis=1))[0].max())+1
+        # row-run rectangle decomposition (merge identical vertical runs)
+        rows={}
+        for (py,px) in pts:rows.setdefault(py,[]).append(px)
+        runs={}
+        for py,xs2 in rows.items():
+            xs2=sorted(xs2);cur=[xs2[0],xs2[0]]
+            for x2 in xs2[1:]:
+                if x2==cur[1]+1:cur[1]=x2
+                else:runs.setdefault((cur[0],cur[1]),[]).append(py);cur=[x2,x2]
+            runs.setdefault((cur[0],cur[1]),[]).append(py)
+        for (x0,x1),ylist in runs.items():
+            ylist=sorted(ylist);sy=ylist[0];prev=ylist[0]
+            for y2 in ylist[1:]+[None]:
+                if y2 is not None and y2==prev+1:prev=y2;continue
+                strips.append({'x':x0*grid,'y':sy*grid,
+                    'w':(x1-x0+1)*grid,'h':(prev-sy+1)*grid,
+                    'horizon':horizon,'note':f'occl-{i}'})
+                if y2 is not None:sy=prev=y2
+    strips.sort(key=lambda s:(s['horizon'],s['y'],s['x']))
+    return strips,len(blobs)
+
+def main():
+    ID=sys.argv[1];grid=int(sys.argv[2]) if len(sys.argv)>2 else 4
+    mp=f"assets/masks/{ID}.mask.png";dp=f"assets/anchors/{ID}.data.js"
+    op=f"assets/masks/{ID}.occl.png"
+    a=np.array(Image.open(mp).convert('RGB'))
+    H,W=a.shape[:2];cw,ch=(W+grid-1)//grid,(H+grid-1)//grid
+    cls=classify(a)
+    cells=np.zeros((ch,cw),dtype=np.uint8)
+    for cy in range(ch):
+        for cx in range(cw):
+            blk=cls[cy*grid:(cy+1)*grid,cx*grid:(cx+1)*grid]
+            vals,counts=np.unique(blk,return_counts=True)
+            cells[cy,cx]=vals[np.argmax(counts)]
+    s=rle(cells)
+    walk=int((cells>0).sum());behind=int((cells==2).sum())
+    print(f"{ID}: {cw}x{ch} cells (grid {grid}) walk={walk} behind={behind} "
+          f"solid={cw*ch-walk} rle={len(s)}B")
+    if not os.path.exists(dp):
+        # create the skeleton, then fall through and fill it like any other room
+        open(dp,'w',encoding='utf-8').write(
+            f"// GENERATED by tools/mask2json.py -- DO NOT HAND-EDIT the mask,\n"
+            f"// walkBehind or grid fields. Repaint and re-run instead.\n"
+            f"// If this room needs anchors (spawns/exits/hotspots/npcSlots),\n"
+            f"// add them by hand BELOW; the tool preserves them. A state variant\n"
+            f"// (e.g. <ROOM>-B) needs no anchors: they live on the base room.\n"
+            f"window.ROOMS=window.ROOMS||{{}};\n"
+            f"ROOMS['{ID}']={{\n"
+            f"  size:[{W},{H}],\n"
+            f"  grid:{grid},\n"
+            f"  mask:null,\n"
+            f"  walkBehind:[]\n"
+            f"}};\n")
+        print(f"created {dp}")
+    if True:
+        src=open(dp,encoding='utf-8').read()
+        new,n=re.subn(r"mask:\s*(null|'[^']*')",f"mask:'{s}'",src,count=1)
+        if not n:sys.exit(f"ERROR: no mask: field found in {dp}")
+        new,g=re.subn(r"grid:\s*\d+",f"grid:{grid}",new,count=1)
+        if not g:sys.exit(f"ERROR: no grid: field found in {dp}")
+        if os.path.exists(op):
+            strips,nblobs=occl_strips(op,grid)
+            body=',\n    '.join(
+                "{x:%d,y:%d,w:%d,h:%d,horizon:%d,note:'%s'}"%(
+                 t['x'],t['y'],t['w'],t['h'],t['horizon'],t['note'])
+                for t in strips)
+            wb="walkBehind:[ // GENERATED from %s.occl.png -- repaint there, don't hand-edit\n    %s\n  ]"%(ID,body)
+            new,k=re.subn(r"walkBehind:\[[^\]]*\]",wb,new,count=1)
+            if not k:
+                # No walkBehind: field yet (a state-data stub, or a hand-authored
+                # skeleton that predates occluders). Insert it after mask: rather
+                # than refusing -- the tool wrote that stub, it can read it back.
+                new,k=re.subn(r"(mask:'[^']*')",lambda m:m.group(1)+",\n  "+wb,new,count=1)
+                if not k:sys.exit(f"ERROR: no mask: field to insert walkBehind after, in {dp}")
+                print("inserted a walkBehind: field (none existed)")
+            print(f"occl: {nblobs} objects -> {len(strips)} strip rects "
+                  f"(horizons: {sorted(set(t['horizon'] for t in strips))})")
+        open(dp,'w',encoding='utf-8').write(new)
+        print(f"updated {dp}")
+
+if __name__=='__main__':main()

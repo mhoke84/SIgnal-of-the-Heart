@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<!-- RADIO UNDERGROUND v2 — tools/maskpaint.html
+     Mask painting tool: backdrop underlay + mask overlay in one view.
+     Runs from file:// (images arrive via file picker, so the canvas
+     never taints and Export works). Paints ONLY the three legal mask
+     colors, hard-edged — mask2json.py gets exactly what it expects.
+     TWO LAYERS:
+       FLOOR    where can feet stand  (WALK white / SOLID black /
+                BEHIND blue = walkable corridor that expects occlusion)
+       OCCLUDER painted silhouettes that redraw OVER sprites; each
+                separate blob becomes a walk-behind strip whose horizon
+                is the blob's bottom row (its floor-contact line).
+                RULE: keep different objects' blobs from touching —
+                touching blobs merge into one strip with one horizon.
+     Workflow: load backdrop -> load floor mask + occl (or start blank)
+     -> paint both layers -> EXPORT FLOOR + EXPORT OCCL -> save as
+     assets/masks/<ID>.mask.png and assets/masks/<ID>.occl.png
+     -> python3 tools/mask2json.py <ID> -> maskview to review. -->
+<html>
+<head>
+<meta charset="utf-8">
+<title>RU v2 — mask paint</title>
+<style>
+  body{margin:0;background:#141210;color:#e8d9b8;font:13px monospace;
+       display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  #bar{padding:8px;background:#1e1a15;display:flex;gap:10px;align-items:center;
+       flex-wrap:wrap;border-bottom:1px solid #3a2a1c}
+  #bar label{cursor:pointer}
+  button,select{background:#3a2a1c;color:#e8d9b8;border:1px solid #66573f;
+       font:12px monospace;padding:3px 8px;cursor:pointer}
+  button.on{background:#e8a24a;color:#1a120c}
+  #wrap{flex:1;overflow:auto;display:flex}
+  #view{margin:auto;image-rendering:pixelated;cursor:crosshair;
+        box-shadow:0 0 40px #000}
+  input[type=file]{display:none}
+  input[type=range]{width:90px}
+  .sw{display:inline-block;width:12px;height:12px;vertical-align:-2px;
+      border:1px solid #000;margin-right:3px}
+  #hud{padding:4px 8px;background:#1e1a15;border-top:1px solid #3a2a1c;
+       color:#9a8c72}
+  kbd{color:#ffd98a}
+</style>
+</head>
+<body>
+<div id="bar">
+  <label><button onclick="bdFile.click()">LOAD BACKDROP</button></label>
+  <input type="file" id="bdFile" accept="image/png">
+  <label><button onclick="mkFile.click()">LOAD FLOOR</button></label>
+  <input type="file" id="mkFile" accept="image/png">
+  <label><button onclick="ocFile.click()">LOAD OCCL</button></label>
+  <input type="file" id="ocFile" accept="image/png">
+  <span>|</span>
+  <button id="lFloor" class="on">FLOOR</button>
+  <button id="lOccl"><span class="sw" style="background:#ff8c28"></span>OCCLUDER</button>
+  <span id="layerBadge" style="padding:2px 8px;font-weight:bold;background:#3a5;color:#fff">EDITING: FLOOR</span>
+  <span>|</span>
+  <button id="c1" class="on"><span class="sw" style="background:#fff"></span>WALK</button>
+  <button id="c0"><span class="sw" style="background:#000"></span>SOLID</button>
+  <button id="c2"><span class="sw" style="background:#2850ff"></span>BEHIND</button>
+  <span>|</span>
+  <button id="tBrush" class="on">BRUSH</button>
+  <button id="tRect">RECT</button>
+  <span>size <input type="range" id="size" min="1" max="8" value="2">
+    <span id="sizeV">2</span> cells</span>
+  <span>|</span>
+  <span>mask <input type="range" id="alpha" min="0" max="100" value="40">
+    <span id="alphaV">40</span>%</span>
+  <button id="tGrid">GRID</button>
+  <button id="tZoom">ZOOM 1x</button>
+  <span>|</span>
+  <button id="undoB">UNDO</button>
+  <button id="clearB" style="background:#a33;color:#fff">CLEAR LAYER</button>
+  <button id="exportB" style="background:#e8a24a;color:#1a120c">EXPORT FLOOR</button>
+  <button id="exportO" style="background:#ff8c28;color:#1a120c">EXPORT OCCL</button>
+</div>
+<div id="wrap"><canvas id="view"></canvas></div>
+<div id="hud">load a normalized backdrop to begin —
+  keys: <kbd>Tab</kbd> FLOOR/OCCLUDER layer,
+  <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> walk/solid/behind (on the OCCLUDER
+  layer: any color paints, SOLID erases), <kbd>B</kbd> brush <kbd>R</kbd> rect,
+  <kbd>[</kbd>/<kbd>]</kbd> size, <kbd>G</kbd> grid, <kbd>Ctrl+Z</kbd> undo.
+  Painting snaps to 8px cells, same resolution the engine reads.</div>
+<script>
+'use strict';
+const CELL=4, COLORS={1:'#ffffff',0:'#000000',2:'#2850ff'};
+let W=0,H=0,zoom=1,color=1,tool='brush',brushCells=2,alpha=0.4,grid=false;
+let bd=null,layer='floor';         // backdrop Image, active layer
+const maskC=document.createElement('canvas'),mg=maskC.getContext('2d');
+const occlC=document.createElement('canvas'),og=occlC.getContext('2d');
+const ORANGE='#ff8c28';
+const view=document.getElementById('view'),vg=view.getContext('2d');
+vg.imageSmoothingEnabled=false;
+let undoStack=[],painting=false,rectA=null,cursor=null,maskName='mask';
+
+function loadImg(file,cb){
+  const im=new Image();
+  im.onload=()=>cb(im);
+  im.src=URL.createObjectURL(file);
+}
+bdFile.onchange=e=>{
+  if(!e.target.files[0])return;
+  maskName=e.target.files[0].name.replace(/\.png$/i,'');
+  loadImg(e.target.files[0],im=>{
+    bd=im;W=im.width;H=im.height;
+    view.width=W;view.height=H;vg.imageSmoothingEnabled=false;
+    maskC.width=W;maskC.height=H;
+    mg.fillStyle='#000';mg.fillRect(0,0,W,H);   // blank mask = all solid
+    occlC.width=W;occlC.height=H;               // blank occl = no strips
+    undoStack=[];setZoom(zoom);draw();
+    hud('backdrop '+maskName+' '+W+'x'+H+' — paint away (blank mask = all solid)');
+  });
+};
+mkFile.onchange=e=>{
+  if(!e.target.files[0]||!bd){hud('load the backdrop first');return;}
+  loadImg(e.target.files[0],im=>{
+    if(im.width!==W||im.height!==H){hud('MASK SIZE MISMATCH: '+im.width+'x'+
+      im.height+' vs backdrop '+W+'x'+H+' — refused');return;}
+    snapshot('floor');mg.drawImage(im,0,0);quantize();draw();
+    hud('floor mask loaded + quantized to the 3 legal colors');
+  });
+};
+ocFile.onchange=e=>{
+  if(!e.target.files[0]||!bd){hud('load the backdrop first');return;}
+  loadImg(e.target.files[0],im=>{
+    if(im.width!==W||im.height!==H){hud('OCCL SIZE MISMATCH — refused');return;}
+    snapshot('occl');og.clearRect(0,0,W,H);og.drawImage(im,0,0);quantizeOccl();draw();
+    hud('occluder layer loaded + quantized');
+  });
+};
+function quantizeOccl(){ // anything orange-ish & opaque stays; rest clears
+  const d=og.getImageData(0,0,W,H),p=d.data;
+  for(let i=0;i<p.length;i+=4){
+    const on=p[i+3]>128&&p[i]>150&&p[i+2]<120;
+    if(on){p[i]=255;p[i+1]=140;p[i+2]=40;p[i+3]=255;}
+    else p[i+3]=0;
+  }
+  og.putImageData(d,0,0);
+}
+// force every mask pixel to one of the three legal colors (kills any AA
+// a previous editor left behind — same classify rule as mask2json.py)
+function quantize(){
+  const d=mg.getImageData(0,0,W,H),p=d.data;
+  for(let i=0;i<p.length;i+=4){
+    const r=p[i],g=p[i+1],b=p[i+2];
+    let v=0;
+    if(r>200&&g>200&&b>200)v=1;else if(b>150&&r<100)v=2;
+    const c=v===1?[255,255,255]:v===2?[40,80,255]:[0,0,0];
+    p[i]=c[0];p[i+1]=c[1];p[i+2]=c[2];p[i+3]=255;
+  }
+  mg.putImageData(d,0,0);
+}
+function snapshot(which){
+  const L=which||layer,g=L==='floor'?mg:og;
+  undoStack.push({L,d:g.getImageData(0,0,W,H)});
+  if(undoStack.length>60)undoStack.shift();
+}
+function undo(){
+  const s=undoStack.pop();
+  if(s){(s.L==='floor'?mg:og).putImageData(s.d,0,0);
+    draw();hud('undo '+s.L+' ('+undoStack.length+' left)');}
+}
+function cellRect(px,py,cells){ // snap to CELL grid, size in cells
+  const cx0=Math.floor(px/CELL),cy0=Math.floor(py/CELL);
+  return [cx0*CELL,cy0*CELL,cells*CELL,cells*CELL];
+}
+function fillCells(x,y,w,h){
+  if(layer==='floor'){mg.fillStyle=COLORS[color];mg.fillRect(x,y,w,h);
+    lastStroke='FLOOR '+(['solid','walk','behind'][color]);}
+  else if(color===0){og.clearRect(x,y,w,h);lastStroke='OCCLUDER erase';}
+  else{og.fillStyle=ORANGE;og.fillRect(x,y,w,h);lastStroke='OCCLUDER paint';}
+}
+let lastStroke='';
+function paintAt(px,py){
+  const half=Math.floor((brushCells-1)/2);
+  const[r0,r1,rw,rh]=cellRect(px-half*CELL,py-half*CELL,brushCells);
+  fillCells(r0,r1,rw,rh);
+}
+function paintRect(a,b){
+  const x0=Math.min(a[0],b[0]),y0=Math.min(a[1],b[1]),
+        x1=Math.max(a[0],b[0]),y1=Math.max(a[1],b[1]);
+  const cx0=Math.floor(x0/CELL)*CELL,cy0=Math.floor(y0/CELL)*CELL,
+        cx1=Math.ceil((x1+1)/CELL)*CELL,cy1=Math.ceil((y1+1)/CELL)*CELL;
+  fillCells(cx0,cy0,cx1-cx0,cy1-cy0);
+}
+function pos(e){
+  const r=view.getBoundingClientRect();
+  return [Math.floor((e.clientX-r.left)/zoom),
+          Math.floor((e.clientY-r.top)/zoom)];
+}
+view.onmousedown=e=>{
+  if(!bd)return;
+  const p=pos(e);snapshot();
+  if(layer==='floor'&&og.getImageData(
+      Math.max(0,Math.min(W-1,p[0])),Math.max(0,Math.min(H-1,p[1])),1,1).data[3]>128)
+    hud('HEADS-UP: the orange here lives on the OCCLUDER layer — press Tab '+
+        'or click OCCLUDER, then 2/E erases it');
+  if(tool==='brush'){painting=true;paintAt(p[0],p[1]);}
+  else rectA=p;
+  draw();
+};
+view.onmousemove=e=>{
+  if(!bd)return;
+  cursor=pos(e);
+  if(painting)paintAt(cursor[0],cursor[1]);
+  draw();
+  const cv=sample(cursor[0],cursor[1]);
+  hud((lastStroke?('['+lastStroke+']  '):'')+
+      'px '+cursor[0]+','+cursor[1]+'  cell '+Math.floor(cursor[0]/CELL)+','+
+      Math.floor(cursor[1]/CELL)+'  value here: '+
+      (cv===1?'WALK':cv===2?'BEHIND':'SOLID'));
+};
+addEventListener('mouseup',e=>{
+  if(rectA&&cursor){paintRect(rectA,cursor);rectA=null;draw();}
+  painting=false;
+});
+function sample(x,y){
+  if(x<0||y<0||x>=W||y>=H)return 0;
+  const p=mg.getImageData(x,y,1,1).data;
+  if(p[0]>200&&p[1]>200&&p[2]>200)return 1;
+  if(p[2]>150&&p[0]<100)return 2;
+  return 0;
+}
+function draw(){
+  if(!bd)return;
+  vg.drawImage(bd,0,0);
+  vg.globalAlpha=alpha;vg.drawImage(maskC,0,0);vg.globalAlpha=1;
+  vg.globalAlpha=Math.min(1,alpha+0.15);vg.drawImage(occlC,0,0);vg.globalAlpha=1;
+  if(grid){
+    vg.fillStyle='rgba(255,0,255,0.25)';
+    for(let x=0;x<=W;x+=CELL)vg.fillRect(x,0,1,H);
+    for(let y=0;y<=H;y+=CELL)vg.fillRect(0,y,W,1);
+  }
+  if(rectA&&cursor){
+    vg.strokeStyle=layer==='occl'?ORANGE:COLORS[color];vg.lineWidth=1;
+    vg.strokeRect(Math.min(rectA[0],cursor[0])+0.5,Math.min(rectA[1],cursor[1])+0.5,
+      Math.abs(cursor[0]-rectA[0]),Math.abs(cursor[1]-rectA[1]));
+  }else if(cursor&&tool==='brush'){
+    const half=Math.floor((brushCells-1)/2);
+    const[r0,r1,rw,rh]=cellRect(cursor[0]-half*CELL,cursor[1]-half*CELL,brushCells);
+    vg.strokeStyle=layer==='occl'?ORANGE:COLORS[color];
+    vg.strokeRect(r0+0.5,r1+0.5,rw,rh);
+  }
+}
+function setZoom(z){
+  zoom=z;view.style.width=(W*z)+'px';view.style.height=(H*z)+'px';
+  tZoom.textContent='ZOOM '+z+'x';
+}
+function setColor(c){color=c;
+  for(const k of[0,1,2])document.getElementById('c'+k).classList.toggle('on',k===c);
+  draw();}
+function setTool(t){tool=t;
+  tBrush.classList.toggle('on',t==='brush');
+  tRect.classList.toggle('on',t==='rect');}
+function setLayer(l){layer=l;
+  lFloor.classList.toggle('on',l==='floor');
+  lOccl.classList.toggle('on',l==='occl');
+  const b=document.getElementById('layerBadge');
+  b.textContent='EDITING: '+(l==='floor'?'FLOOR':'OCCLUDER');
+  b.style.background=l==='floor'?'#3a5':'#ff8c28';
+  b.style.color=l==='floor'?'#fff':'#1a120c';
+  c0.innerHTML='<span class="sw" style="background:'+(l==='occl'?
+    'repeating-linear-gradient(45deg,#888 0 3px,#ccc 3px 6px)':'#000')+
+    '"></span>'+(l==='occl'?'ERASE':'SOLID');
+  hud(l==='floor'?'FLOOR layer — 1 walk / 2 solid / 3 behind':
+    'OCCLUDER layer — 1 or 3 paints orange, 2/E ERASES, keep blobs 1 cell (4px) apart');
+  draw();}
+lFloor.onclick=()=>setLayer('floor');lOccl.onclick=()=>setLayer('occl');
+clearB.onclick=()=>{
+  if(!bd)return;
+  if(!confirm('Blank the entire '+layer.toUpperCase()+
+    ' layer? (Ctrl+Z restores it)'))return;
+  snapshot();
+  if(layer==='floor'){mg.fillStyle='#000';mg.fillRect(0,0,W,H);}
+  else og.clearRect(0,0,W,H);
+  draw();hud(layer.toUpperCase()+' layer cleared — Ctrl+Z to restore. '+
+    'A blank OCCLUDER export legitimately removes all generated occluders.');
+};
+c1.onclick=()=>setColor(1);c0.onclick=()=>setColor(0);c2.onclick=()=>setColor(2);
+tBrush.onclick=()=>setTool('brush');tRect.onclick=()=>setTool('rect');
+size.oninput=e=>{brushCells=+e.target.value;sizeV.textContent=brushCells;};
+alphaEl();function alphaEl(){
+  document.getElementById('alpha').oninput=e=>{
+    alpha=e.target.value/100;alphaV.textContent=e.target.value;draw();};}
+tGrid.onclick=()=>{grid=!grid;tGrid.classList.toggle('on',grid);draw();};
+tZoom.onclick=()=>setZoom(zoom===1?2:zoom===2?3:1);
+undoB.onclick=undo;
+exportB.onclick=()=>{
+  if(!bd)return;
+  const a=document.createElement('a');
+  a.download=maskName+'.mask.png';
+  a.href=maskC.toDataURL('image/png');
+  a.click();
+  hud('exported '+a.download+' -> save into assets/masks/ (keep the '+
+      'exact filename: dots, not underscores), then run: '+
+      'py tools\\mask2json.py '+maskName);
+};
+exportO.onclick=()=>{
+  if(!bd)return;
+  const a=document.createElement('a');
+  a.download=maskName+'.occl.png';
+  a.href=occlC.toDataURL('image/png');
+  a.click();
+  hud('exported '+a.download+' -> save into assets/masks/, then run: '+
+      'py tools\\mask2json.py '+maskName);
+};
+addEventListener('keydown',e=>{
+  if(e.key==='Tab'){e.preventDefault();setLayer(layer==='floor'?'occl':'floor');}
+  if(e.key==='1')setColor(1);if(e.key==='2')setColor(0);if(e.key==='3')setColor(2);
+  if(e.key==='e'||e.key==='E')setColor(0);
+  if(e.key==='b'||e.key==='B')setTool('brush');
+  if(e.key==='r'||e.key==='R')setTool('rect');
+  if(e.key==='[')size.value=brushCells=Math.max(1,brushCells-1),sizeV.textContent=brushCells;
+  if(e.key===']')size.value=brushCells=Math.min(8,brushCells+1),sizeV.textContent=brushCells;
+  if(e.key==='g'||e.key==='G')tGrid.onclick();
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
+});
+function hud(s){document.getElementById('hud').innerHTML=s;}
+</script>
+</body>
+</html>

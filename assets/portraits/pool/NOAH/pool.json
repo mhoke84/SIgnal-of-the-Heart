@@ -1,0 +1,435 @@
+{
+  "base": {
+    "file": "base.0.png",
+    "src": [
+      "NOAH.1.png",
+      1
+    ]
+  },
+  "eyes": [
+    {
+      "file": "eyes.0.png",
+      "src": [
+        "NOAH.4.png",
+        4
+      ],
+      "change": 45.7,
+      "off": [
+        0,
+        -12
+      ]
+    },
+    {
+      "file": "eyes.1.png",
+      "src": [
+        "NOAH.5.png",
+        7
+      ],
+      "change": 41.8,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "eyes.2.png",
+      "src": [
+        "NOAH.5.png",
+        5
+      ],
+      "change": 38.6,
+      "off": [
+        0,
+        -7
+      ]
+    },
+    {
+      "file": "eyes.3.png",
+      "src": [
+        "NOAH.3.png",
+        4
+      ],
+      "change": 37.0,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "eyes.4.png",
+      "src": [
+        "NOAH.6.png",
+        7
+      ],
+      "change": 36.7,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "eyes.5.png",
+      "src": [
+        "NOAH.8.png",
+        3
+      ],
+      "change": 33.8,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "eyes.6.png",
+      "src": [
+        "NOAH.4.png",
+        2
+      ],
+      "change": 28.2,
+      "off": [
+        0,
+        -1
+      ]
+    },
+    {
+      "file": "eyes.7.png",
+      "src": [
+        "NOAH.3.png",
+        3
+      ],
+      "change": 25.1,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "eyes.8.png",
+      "src": [
+        "NOAH.1.png",
+        4
+      ],
+      "change": 24.1,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "eyes.9.png",
+      "src": [
+        "NOAH.3.png",
+        7
+      ],
+      "change": 21.5,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "eyes.10.png",
+      "src": [
+        "NOAH.8.png",
+        6
+      ],
+      "change": 20.8,
+      "off": [
+        0,
+        -1
+      ]
+    }
+  ],
+  "mouth": [
+    {
+      "file": "mouth.0.png",
+      "src": [
+        "NOAH.3.png",
+        5
+      ],
+      "change": 54.6,
+      "off": [
+        0,
+        -4
+      ]
+    },
+    {
+      "file": "mouth.1.png",
+      "src": [
+        "NOAH.3.png",
+        4
+      ],
+      "change": 52.5,
+      "off": [
+        0,
+        -2
+      ]
+    },
+    {
+      "file": "mouth.2.png",
+      "src": [
+        "NOAH.5.png",
+        7
+      ],
+      "change": 45.7,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "mouth.3.png",
+      "src": [
+        "NOAH.3.png",
+        6
+      ],
+      "change": 45.1,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "mouth.4.png",
+      "src": [
+        "NOAH.3.png",
+        2
+      ],
+      "change": 44.2,
+      "off": [
+        0,
+        6
+      ]
+    },
+    {
+      "file": "mouth.5.png",
+      "src": [
+        "NOAH.4.png",
+        7
+      ],
+      "change": 42.6,
+      "off": [
+        0,
+        -12
+      ]
+    },
+    {
+      "file": "mouth.6.png",
+      "src": [
+        "NOAH.7.png",
+        6
+      ],
+      "change": 41.0,
+      "off": [
+        0,
+        6
+      ]
+    },
+    {
+      "file": "mouth.7.png",
+      "src": [
+        "NOAH.5.png",
+        6
+      ],
+      "change": 40.0,
+      "off": [
+        0,
+        -9
+      ]
+    },
+    {
+      "file": "mouth.8.png",
+      "src": [
+        "NOAH.3.png",
+        3
+      ],
+      "change": 39.3,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "mouth.9.png",
+      "src": [
+        "NOAH.8.png",
+        4
+      ],
+      "change": 38.6,
+      "off": [
+        0,
+        -8
+      ]
+    },
+    {
+      "file": "mouth.10.png",
+      "src": [
+        "NOAH.7.png",
+        4
+      ],
+      "change": 36.5,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "mouth.11.png",
+      "src": [
+        "NOAH.8.png",
+        5
+      ],
+      "change": 36.2,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "mouth.12.png",
+      "src": [
+        "NOAH.4.png",
+        3
+      ],
+      "change": 34.2,
+      "off": [
+        0,
+        -7
+      ]
+    },
+    {
+      "file": "mouth.13.png",
+      "src": [
+        "NOAH.5.png",
+        3
+      ],
+      "change": 34.2,
+      "off": [
+        0,
+        -1
+      ]
+    },
+    {
+      "file": "mouth.14.png",
+      "src": [
+        "NOAH.1.png",
+        4
+      ],
+      "change": 33.5,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "mouth.15.png",
+      "src": [
+        "NOAH.3.png",
+        7
+      ],
+      "change": 30.7,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "mouth.16.png",
+      "src": [
+        "NOAH.8.png",
+        8
+      ],
+      "change": 29.4,
+      "off": [
+        0,
+        2
+      ]
+    },
+    {
+      "file": "mouth.17.png",
+      "src": [
+        "NOAH.8.png",
+        3
+      ],
+      "change": 28.4,
+      "off": [
+        0,
+        -5
+      ]
+    },
+    {
+      "file": "mouth.18.png",
+      "src": [
+        "NOAH.8.png",
+        6
+      ],
+      "change": 25.2,
+      "off": [
+        0,
+        -1
+      ]
+    },
+    {
+      "file": "mouth.19.png",
+      "src": [
+        "NOAH.3.png",
+        8
+      ],
+      "change": 24.1,
+      "off": [
+        0,
+        -1
+      ]
+    },
+    {
+      "file": "mouth.20.png",
+      "src": [
+        "NOAH.1.png",
+        8
+      ],
+      "change": 22.4,
+      "off": [
+        0,
+        3
+      ]
+    },
+    {
+      "file": "mouth.21.png",
+      "src": [
+        "NOAH.2.png",
+        3
+      ],
+      "change": 22.1,
+      "off": [
+        0,
+        -1
+      ]
+    }
+  ],
+  "rois": {
+    "nose": [
+      119,
+      132,
+      96,
+      164
+    ],
+    "upper": [
+      80,
+      124,
+      58,
+      200
+    ],
+    "mouth": [
+      126,
+      194,
+      88,
+      176
+    ],
+    "mouth_inner": [
+      131,
+      141,
+      104,
+      158
+    ]
+  }
+}
