@@ -375,7 +375,7 @@ as sprites in that pass, a painted tree occludes any pedestrian whose feet-Y is
 behind it. **Per-person "depth (feet y)" in the choreographer is exactly that
 `py`** — it decides in-front-of vs behind each tree.
 
-**Tool:** `tools/earbud_choreographer.html` (self-contained). Per-person cycle
+**Tool:** `tools/choreographer.html` (self-contained). Per-person cycle
 builder (pick good frames across a person's sheets → drop third-leg/stall/head-
 turn), per-person direction/speed/scale/**depth**/start-pos/fps, a scene **camera
 (zoom + focus)** that moves everyone in world space, Restart, and **Export** →

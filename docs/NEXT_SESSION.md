@@ -16,7 +16,7 @@ Everything is staged; it needs the producer's final export, then the wiring. Ful
 detail is in **MASTER_REFERENCE §5.5** — read it first. Short version:
 
 **Waiting on the producer:** a final `earbud_scene.json` exported from
-`tools/earbud_choreographer.html` (camera + per-person choreography + each walk
+`tools/choreographer.html` (camera + per-person choreography + each walk
 cycle as `{sheet, frame}` source refs). He may also, by then, have **painted the
 STORE-EXT-A OCCLUDER** (trees) in maskpaint — that's all the paint this cinematic
 needs (no floor mask; scripted actors don't use `Mask.canStand`).
