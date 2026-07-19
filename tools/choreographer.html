@@ -33,7 +33,7 @@
 
 <div class="panel"><div class="lbl">STAGE</div>
  <canvas id="stage" width="960" height="540"></canvas>
- <div class="row"><button id="playbtn">❚❚ Pause</button><button id="restart">⟲ Restart</button><button id="export">⭳ Export scene</button>
+ <div class="row"><button id="playbtn">❚❚ Pause</button><button id="restart">⟲ Restart</button><button id="export">⭳ Export scene</button><label style="margin-left:10px"><input type="checkbox" id="occ" checked> walk-behind</label>
   <div class="ctrl">zoom <b><span id="czv">1.00</span>×</b><input id="cz" type="range" min="100" max="350" value="100"></div>
   <div class="ctrl">focus x <b><span id="cfxv">480</span></b><input id="cfx" type="range" min="0" max="960" value="480"></div>
   <div class="ctrl">focus y <b><span id="cfyv">270</span></b><input id="cfy" type="range" min="0" max="540" value="270"></div>
@@ -102,7 +102,13 @@ function hasPix(cv){const d=cv.getContext('2d').getImageData(0,0,CW,CH).data;let
 let cur='A', playing=true; const CAM={zoom:1,fx:480,fy:270};
 
 // ---------- STAGE ----------
+// Walk-behind strips for STORE-EXT-A [x,y,w,h,horizon] in BACKDROP px (from mask2json).
+// The engine re-blits these backdrop rects over sprites whose feet sort above the horizon.
+const EXT_A_WB=[[252,96,12,4,196],[200,100,64,8,196],[188,108,72,4,196],[176,112,84,4,196],[268,112,4,4,196],[176,116,108,4,196],[172,120,128,4,196],[172,124,124,4,196],[172,128,120,4,196],[172,132,116,4,196],[172,136,48,4,196],[224,136,12,4,196],[240,136,52,4,196],[168,140,60,4,196],[232,140,52,4,196],[168,144,32,4,196],[204,144,80,4,196],[168,148,28,4,196],[200,148,84,4,196],[288,148,16,4,196],[172,152,72,4,196],[248,152,52,4,196],[160,156,84,4,196],[248,156,4,4,196],[256,156,36,4,196],[172,160,36,4,196],[212,160,28,4,196],[244,160,4,4,196],[252,160,36,4,196],[184,164,28,4,196],[216,164,68,4,196],[184,168,12,8,196],[200,168,16,4,196],[220,168,64,4,196],[200,172,72,4,196],[180,176,44,4,196],[228,176,44,4,196],[184,180,44,4,196],[232,180,36,4,196],[208,184,32,4,196],[212,188,28,4,196],[216,192,4,4,196],[784,208,4,52,260],[756,208,4,56,264],[224,208,4,64,272],[248,208,4,64,272],[736,124,84,16,276],[724,140,96,4,276],[836,140,8,4,276],[724,144,124,4,276],[736,148,28,4,276],[768,148,80,4,276],[728,152,124,4,276],[712,156,68,4,276],[784,156,64,4,276],[716,160,64,4,276],[784,160,56,4,276],[720,164,128,4,276],[720,168,28,4,276],[752,168,36,4,276],[792,168,8,4,276],[804,168,40,4,276],[720,172,32,4,276],[756,172,84,4,276],[736,176,84,4,276],[824,176,16,4,276],[732,180,96,4,276],[736,184,68,4,276],[808,184,20,4,276],[752,188,68,4,276],[756,192,20,4,276],[780,192,4,4,276],[796,192,12,4,276],[232,196,8,80,276],[764,196,16,4,276],[792,196,24,4,276],[772,200,4,76,276],[796,200,4,4,276],[804,200,4,4,276]];
+let OCC=true;
 function drawBG(){const sW=stage.width,sH=sW*BH/BW;sx.drawImage(bd,0,stage.height-sH,sW,sH);}
+// backdrop->stage mapping used by both drawBG and the walk-behind re-blit
+function bgMap(){const sW=stage.width,sH=sW*BH/BW;return {f:sW/BW,oy:stage.height-sH};}
 function resetX(p){const hw=CW*p.scale/2;const path=stage.width+CW*p.scale;const entry=p.dir==='R'?-hw:stage.width+hw;p.x=entry+(p.dir==='R'?1:-1)*p.off*path;}
 function frameStep(dt){
  sx.setTransform(1,0,0,1,0,0);
@@ -110,16 +116,31 @@ function frameStep(dt){
  sx.save();
  sx.translate(stage.width/2,stage.height/2);sx.scale(CAM.zoom,CAM.zoom);sx.translate(-CAM.fx,-CAM.fy);
  drawBG();
- const order=Object.keys(P).filter(id=>P[id].on).sort((a,b)=>a.localeCompare(b));
- for(const id of order){const p=P[id];if(!p.cycle.length)continue;
+ // 1. advance every on-actor's position/frame (state update, not draw)
+ const ids=Object.keys(P).filter(id=>P[id].on).sort((a,b)=>a.localeCompare(b));
+ for(const id of ids){const p=P[id];if(!p.cycle.length)continue;
   p.x+=(p.dir==='R'?1:-1)*p.speed*p.scale*dt; p.ft+=dt;
   if(p.ft>=1/p.fps){p.ft=0;p.frame=(p.frame+1)%p.cycle.length;}
   const hw=CW*p.scale/2;
   if(p.dir==='R'&&p.x>stage.width+hw) resetX(p);
   if(p.dir==='L'&&p.x<-hw) resetX(p);
-  const fr=p.pool[p.cycle[p.frame%p.cycle.length]]; if(!fr)continue;
-  const w=CW*p.scale,h=CH*p.scale;
-  sx.drawImage(fr.cv,p.x-w/2,p.gy-FOOT*p.scale,w,h);
+ }
+ // 2. shared y-sort: actors at feet-Y, walk-behind strips at horizon-Y (stage px).
+ //    Same one-pass sort the engine (stage.js) does; a strip drawn after an actor
+ //    re-blits the backdrop rect over it -> the actor is occluded (behind the tree).
+ const {f,oy}=bgMap();
+ const order=[];
+ for(const id of ids){const p=P[id];if(p.cycle.length)order.push({y:p.gy,p});}
+ if(OCC)for(const s of EXT_A_WB)order.push({y:oy+s[4]*f,s});
+ order.sort((a,b)=>a.y-b.y);
+ for(const o of order){
+  if(o.s){const s=o.s; // re-blit backdrop rect (the tree pixels) at its stage position
+   sx.drawImage(bd,s[0],s[1],s[2],s[3], s[0]*f, oy+s[1]*f, s[2]*f, s[3]*f);
+  }else{const p=o.p;
+   const fr=p.pool[p.cycle[p.frame%p.cycle.length]]; if(!fr)continue;
+   const w=CW*p.scale,h=CH*p.scale;
+   sx.drawImage(fr.cv,p.x-w/2,p.gy-FOOT*p.scale,w,h);
+  }
  }
  sx.restore();
 }
@@ -205,6 +226,7 @@ function init(){
  Object.values(P).forEach(resetX);
  buildSelector();buildEditor();bindP();
  document.getElementById('playbtn').onclick=function(){playing=!playing;this.textContent=playing?'❚❚ Pause':'▶ Play';};
+ {const oc=document.getElementById('occ');if(oc)oc.onchange=function(){OCC=this.checked;};}
  document.getElementById('restart').onclick=restart;
  document.getElementById('export').onclick=exportScene;
  requestAnimationFrame(loop);
